@@ -18,8 +18,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 
-# webdriver_manager is optional we use it if it's present
+# webdriver_manager is optional we use it if present
 try:
     from webdriver_manager.chrome import ChromeDriverManager
 except ImportError:
@@ -54,7 +55,7 @@ def wait_for_server_ready(url: str, timeout_seconds: int = 10):
 def start_flask_application():
     """
     Starts the flask app once for the whole test session. Removes library.db so we always start
-    from the same sample data. Runs python app.py using the same interpreter that runs pytest.
+    from the same sample data.
     """
 
     # Starting from a fresh database each run
@@ -88,21 +89,19 @@ def selenium_driver():
     """
     Creates a new Chrome browser for each test.
     """
-    chrome_options = webdriver.ChromeOptions()
+    chrome_options = Options()
+
+    # sets to values that chromedriver and system accept
+    chrome_options.page_load_strategy = "normal"
     chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--window-size=1280,720")
-
-    # Use it only if it's available
     if ChromeDriverManager is not None:
         service = Service(ChromeDriverManager().install())
         browser = webdriver.Chrome(service=service, options=chrome_options)
     else:
-
-        # default webdriver behavior
         browser = webdriver.Chrome(options=chrome_options)
     yield browser
     browser.quit()
-
 
 def find_catalog_row_for_title(browser: webdriver.Chrome, book_title: str):
     """
@@ -118,7 +117,6 @@ def find_catalog_row_for_title(browser: webdriver.Chrome, book_title: str):
         f'Couldnt find catalog row for title "{book_title}".'
     )
     return matching_row
-
 
 def test_add_new_book_visible_in_catalog(selenium_driver):
     """
@@ -172,7 +170,7 @@ def test_add_new_book_visible_in_catalog(selenium_driver):
         EC.url_contains("/catalog")
     )
 
-    # Checking that the success flash message is displayed
+    # Checking if the success flash message is displayed
     # We wait until one element of the kind appears.
     success_flash_element = WebDriverWait(selenium_driver, timeout=5).until(
         EC.visibility_of_element_located((By.CSS_SELECTOR, "div.flash-success"))
