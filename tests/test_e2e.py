@@ -91,7 +91,7 @@ def selenium_driver():
     """
     chrome_options = Options()
 
-    # sets to values that chromedriver and system accept
+    # sets to values chromedriver  and system accept
     chrome_options.page_load_strategy = "normal"
     chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--window-size=1280,720")
@@ -102,6 +102,7 @@ def selenium_driver():
         browser = webdriver.Chrome(options=chrome_options)
     yield browser
     browser.quit()
+
 
 def find_catalog_row_for_title(browser: webdriver.Chrome, book_title: str):
     """
@@ -117,6 +118,7 @@ def find_catalog_row_for_title(browser: webdriver.Chrome, book_title: str):
         f'Couldnt find catalog row for title "{book_title}".'
     )
     return matching_row
+
 
 def test_add_new_book_visible_in_catalog(selenium_driver):
     """
@@ -214,8 +216,8 @@ def test_add_new_book_visible_in_catalog(selenium_driver):
 
 def test_borrow_book_from_catalog_shows_confirmation(selenium_driver):
     """
-    Borrow flow:
-    1. Finds "The Great Gatsby" in the catalog.
+    Flow:
+    1. Finds The Great Gatsby in the catalog.
     2. Enters a patron id
     3. Clicks borrow and check that the success flash shows the title and a valid due date
     """
